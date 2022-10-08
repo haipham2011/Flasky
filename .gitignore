@@ -3,3 +3,4 @@
 *.pyc
 instance/*
 .env
+**/ui_tests/results

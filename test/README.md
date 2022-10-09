@@ -1,5 +1,6 @@
 # Description
 This project directory contains automated tests for demo_app
+`What should improve` is the part that I show all scenario which the tests are failed. To know better, please run `run_test.sh` in the root project directory.
 
 # List of features
 
@@ -24,9 +25,9 @@ This project directory contains automated tests for demo_app
 - When user input empty fields, it is not allow to register
 - When user register with the existed username, it should show message in the top
 
-* What should improve:
+**What should improve**:
 - password too short and should have more rules to check password
-- when user input text instead of number in phonenumber field, the website still allow to register
+- when user input text instead of number in phone field, the website still allow to register
 - user name still allow special characters
 
 3. Login page
@@ -40,7 +41,7 @@ This project directory contains automated tests for demo_app
 - When user input invalid test username and password, it should navigate to error page
 - When user input empty username and password, it should stay the same page
 
-4. User app
+4. User page
 * Preset: login with valid username and password
 - When user input /user address, the browser should navigate to user page
 - When user open user page, it show user name on top
@@ -50,3 +51,32 @@ This project directory contains automated tests for demo_app
 - When user open user page, it show user information according to table fields
 - When user click logout, it redirect to main page
 - When user not login but access /user link, it does not show user table
+
+## API tests
+1. /api/auth/token GET
+- When user request this url with username and password, it should return a token
+- When user request this url with wrong username and password, it should return error message
+
+2. /api/users GET
+- When user request this url, it should return a list of user
+
+3. /api/users POST
+- When user request this url, it should return a success message
+
+**What should improve**:
+- When put some field empty, API still allow to create new user which is opposite to UI behavior
+
+4. /api/users/{username} GET
+- When user request this url, it should return message token required
+- When user request this url with token, it should return successful message
+
+**What should improve**:
+- When user request this url with right token but wrong username, it should return an error message instead of successful one
+
+5. /api/users/{username} PUT
+- When user request this url, it should return message token required
+
+**What should improve**:
+- When put some field empty, API still allow to update new user which is opposite to UI behavior
+
+

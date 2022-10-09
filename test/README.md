@@ -1,3 +1,26 @@
+# Requirement
+- virtualenv >= 20.4
+- Python >= 3.6
+- geckodriver
+
+# How to start
+- Go to root directory, run these command to create python virtualenv:
+```
+virtualenv -p python3 .venv
+export FLASK_APP=demo_app
+source $(pwd)/.venv/bin/activate 
+```
+- Install required python dependencies
+```
+pip install -r requirements.txt
+pip install selenium==3.141.0
+```
+- Run acceptance tests by running this command
+```
+./run_test.sh
+```
+- Check `/test/ui_tests/results/report.html` and `/test/api_tests/results/report.html` to see the test report
+
 # Description
 This project directory contains automated tests for demo_app
 `What should improve` is the part that I show all scenario which the tests are failed. To know better, please run `run_test.sh` in the root project directory.

@@ -1,68 +1,61 @@
 *** Settings ***
+Documentation     Register page test suite.
 Library    SeleniumLibrary
-Resource    ./resources/setup.robot
-Suite Setup    Open Test Browser
-Suite Teardown    Run Keywords    Teardown Setup    Drop database
+Resource    ../resources/setup.robot
+Resource    ../resources/common_variables.robot
+Resource    ../resources/common_keywords.robot
+Suite Setup    UI Test Setup
+Suite Teardown    UI Test Teardown
+
 
 *** Variables ***
-# Labels
-${userNameLabel}    Username
-${passwordLabel}    Password
-${firstNameLabel}    First name
-${familyNameLabel}    Family Name
-${phoneNumberLabel}    Phone number    
-
-# Input ids
-${userNameId}    username
-${passwordId}    password
-${firstNameId}    firstname
-${familyNameId}    lastname
-${phoneNumberId}    phone  
-
-# Input elements
-${userNameInput}    xpath=//input[@id='${userNameId}']
-${passwordInput}    xpath=//input[@id='${passwordId}']
-${firstNameInput}    xpath=//input[@id='${firstNameId}']
-${familyNameInput}    xpath=//input[@id='${familyNameId}']
-${phoneNumberInput}    xpath=//input[@id='${phoneNumberId}']
-
-# Button elements
-${loginButton}    xpath=//input[@value='${loginText}']
+${LOGIN_ERROR_MESSAGE}    User ${VALID_USER_INFO}[username] is already registered.
+@{LABEL_LIST}=    ${USER_NAME_LABEL}    ${PASSWORD_LABEL}    ${FIRST_NAME_LABEL}    ${FAMILY_NAME_LABEL}    ${PHONE_NUMBER_LABEL}
+@{INPUT_LIST}=    ${USER_NAME_INPUT}    ${PASSWORD_INPUT}    ${FIRST_NAME_INPUT}    ${FAMILY_NAME_INPUT}    ${PHONE_NUMBER_INPUT}
 
 
 *** Keywords ***    
-Verify Page Contains Required Labels
-    Wait Until Page Contains    ${userNameLabel}
-    Wait Until Page Contains    ${passwordLabel}
-    Wait Until Page Contains    ${firstNameLabel}
-    Wait Until Page Contains    ${familyNameLabel}
-    Wait Until Page Contains    ${phoneNumberLabel}
-    Wait Until Element Is Visible    ${userNameInput}
-    Wait Until Element Is Visible    ${passwordInput}
-    Wait Until Element Is Visible    ${firstNameInput}
-    Wait Until Element Is Visible    ${familyNameInput}
-    Wait Until Element Is Visible    ${phoneNumberInput}
+Register Page Contains Required Elements
+    FOR    ${label}    IN    @{LABEL_LIST}
+        Wait Until Page Contains    ${label}  
+    END
+        
+    FOR    ${input}    IN    @{INPUT_LIST}
+        Wait Until Element Is Visible    ${input}
+    END
 
-Input Required Register Information
-    Input Text    ${userNameInput}    TestUserName
-    Input Text    ${passwordInput}    TestPassword123@
-    Input Text    ${firstNameInput}    TestFirstName
-    Input Text    ${familyNameInput}    TestLastName
-    Input Text    ${phoneNumberInput}    012345678
-
+Navigate to Register Page From Main Page
+    Wait Until Page Contains    ${REGISTER_TEXT}
+    Click Element    xpath=//a[text()='${REGISTER_TEXT}']
 
 *** Test Cases ***
-Verify Register Page
-    Wait Until Page Contains    ${registerText}
-    Click Element    xpath=//a[text()='${registerText}']
-    Verify Page Contains Required Labels 
-    Input Required Register Information
-    Click Element    xpath=//input[@value='${registerText}']
-    
-Verify Login Page
-    Wait Until Page Contains    ${loginText}
-    Wait Until Page Contains    ${userNameLabel}
-    Wait Until Page Contains    ${passwordLabel}
-    Wait Until Element Is Visible    ${userNameInput}
-    Wait Until Element Is Visible    ${passwordInput}
-    Wait Until Element Is Visible    ${loginButton}
+Browser Navigate To Login Page After Register Successfully
+    Given Navigate to Register Page From Main Page
+    When Register Page Contains Required Elements 
+    And Create New User    ${VALID_USER_INFO}
+    Then Login Page Show Correct Elements In UI
+
+Browser Display Already Registered Message After User Register Existed Username
+    Given Navigate to Register Page From Main Page
+    When Create New User    ${VALID_USER_INFO}
+    Then Wait Until Page Contains    ${LOGIN_ERROR_MESSAGE}
+
+Browser Should Not Navigate To Login Page When User Leave Some Field Empty
+    Given Navigate to Register Page From Main Page
+    When Create New User    ${EMPTY_USER_INFO}
+    Then Register Page Contains Required Elements
+
+Browser Should Not Navigate To Login Page When User Type Short Password
+    Given Navigate to Register Page From Main Page
+    When Create New User    ${SHORT_PASSWORD_USER}
+    Then Page Should Not Contain    ${LOGIN_TEXT}
+
+Browser Should Not Navigate To Login Page When User Type Invalid Phone Number
+    Given Navigate to Register Page From Main Page
+    When Create New User    ${INVALID_PHONE_NUM_USER}
+    Then Page Should Not Contain    ${LOGIN_TEXT}
+
+Browser Should Not Navigate To Login Page When User Type Space Character in Username Field
+    Given Navigate to Register Page From Main Page
+    When Create New User    ${SPACE_INCLUDE_USER}
+    Then Page Should Not Contain    ${LOGIN_TEXT}

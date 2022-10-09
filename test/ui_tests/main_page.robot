@@ -1,21 +1,32 @@
 *** Settings ***
+Documentation     Main page test suite.
 Library    SeleniumLibrary
-Resource    ./resources/setup.robot
+Resource    ../resources/setup.robot
+Resource    ../resources/common_variables.robot
+Resource    ../resources/common_keywords.robot
+Suite Setup    UI Test Setup
+Suite Teardown    UI Test Teardown
 
 
 *** Variables ***
-${title}    Demo app
-${header}    index page
-${loginText}    Log In
+${TITLE}    Demo app
+${HEADER}    index page
+${LOGIN_TEXT}    Log In
+@{REQUIRED_TEXTS}=    ${TITLE}    ${HEADER}
+@{URL_LIST}=    ${TEST_ADDRESS}/register    ${TEST_ADDRESS}/login
 
+
+*** Keywords ***
+Main Page Show Required Texts
+    FOR    ${text}    IN    @{REQUIRED_TEXTS}
+        Wait Until Page Contains    ${text}
+    END
+    
 
 *** Test Cases ***
-Verify main page
-    [Setup]    Open Test Browser
-    Wait Until Page Contains    ${title}
-    Wait Until Page Contains    ${header}
-    ${urlRegister}=  Get Element Attribute   xpath=//a[text()='${registerText}']    href
-    Should Be Equal    ${urlRegister}    ${webAddress}/register
-    ${urlLogin}=  Get Element Attribute   xpath=//a[text()='${loginText}']    href
-    Should Be Equal    ${urlLogin}    ${webAddress}/login
-    [Teardown]    Teardown Setup
+Browser Display Required Texts and Links
+    When Main Page Show Required Texts
+    ${registerUrl}=  Get Element Attribute   xpath=//a[text()='${REGISTER_TEXT}']    href
+    ${loginUrl}=  Get Element Attribute   xpath=//a[text()='${LOGIN_TEXT}']    href
+    Then Should Be Equal    ${registerUrl}    ${TEST_ADDRESS}/register
+    And Should Be Equal    ${loginUrl}    ${TEST_ADDRESS}/login

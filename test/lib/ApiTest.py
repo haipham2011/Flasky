@@ -1,14 +1,15 @@
 import requests
 
+
+APPLICATION_JSON = "application/json"
+
 class ApiTest(object):
     '''API Class contains methods to execute testing requests'''
 
     def __init__(self, address, api_route):
-        self.address = address
-        self.api_route = api_route
-        self.api_full_address = address + "/" + api_route
+        self.__api_full_address = address + "/" + api_route
 
-    def get_request(self, endpoint, content_type="application/json", authentication=None, token=None):
+    def get_request(self, endpoint, content_type=APPLICATION_JSON, authentication=None, token=None):
         '''
         Implement GET request
         Argument(s):
@@ -19,8 +20,8 @@ class ApiTest(object):
         Return:
             json repsonse
         '''
-        request_url = self.api_full_address + "/" + endpoint
-        response = None
+        request_url = self.__api_full_address + "/" + endpoint
+
         if authentication:
             session = requests.Session()
             session.auth = (
@@ -29,6 +30,7 @@ class ApiTest(object):
             response = session.get(request_url, headers={
                 'Content-Type': content_type,
             })
+
         else:
             response = requests.get(url=request_url, headers={
                 'Content-Type': content_type,
@@ -37,7 +39,7 @@ class ApiTest(object):
 
         return response.json()
 
-    def post_request(self, endpoint, content_type="application/json", body=None):
+    def post_request(self, endpoint, content_type=APPLICATION_JSON, body=None):
         '''
         Implement POST request to add new object
         Argument(s):
@@ -47,14 +49,14 @@ class ApiTest(object):
         Return:
             json repsonse
         '''
-        request_url = self.api_full_address + "/" + endpoint
+        request_url = self.__api_full_address + "/" + endpoint
         response = requests.post(url=request_url, json=body, headers={
             'Content-Type': content_type
         })
 
         return response.json()
 
-    def put_request(self, endpoint, content_type="application/json", body=None, token=None):
+    def put_request(self, endpoint, content_type=APPLICATION_JSON, body=None, token=None):
         '''
         Implement PUT request to modify object
         Argument(s):
@@ -65,7 +67,7 @@ class ApiTest(object):
         Return:
             json repsonse
         '''
-        request_url = self.api_full_address + "/" + endpoint
+        request_url = self.__api_full_address + "/" + endpoint
         response = requests.put(url=request_url, json=body, headers={
             'Content-Type': content_type,
             'Token': token
